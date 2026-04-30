@@ -1,2 +1,23 @@
 language: english
 support-cooldown: 10
+
+telegram:
+  enabled: true
+  bot-token: ""
+  super-admins:
+    - 123456789
+  answer-max-length: 237
+  in-progress-timeout-seconds: 300
+  polling-interval-seconds: 5
+  topics:
+    new-tickets:
+      chat-id: -1001234567890
+      thread-id: 10
+    closed-tickets:
+      chat-id: -1001234567890
+      thread-id: 11
+  cleanup:
+    delete-user-input: true
+    delete-bot-prompts: true
+  messages:
+    parse-mode: "HTML"

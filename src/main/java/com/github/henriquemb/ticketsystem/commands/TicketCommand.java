@@ -6,9 +6,10 @@ import com.github.henriquemb.ticketsystem.database.controller.TicketController;
 import com.github.henriquemb.ticketsystem.database.model.TicketModel;
 import com.github.henriquemb.ticketsystem.enums.TicketRatingEnum;
 import com.github.henriquemb.ticketsystem.exceptions.PaginationException;
+import com.github.henriquemb.ticketsystem.telegram.model.AnswerTicketResult;
+import com.github.henriquemb.ticketsystem.telegram.model.ResponderInfo;
 import com.github.henriquemb.ticketsystem.util.Pagination;
 import com.github.henriquemb.ticketsystem.util.PrepareMessages;
-import com.github.henriquemb.ticketsystem.util.ResponseMessages;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -18,7 +19,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -151,23 +151,43 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
         }
 
         String request = String.join(" ", args);
+        String playerName = p.getName();
 
-        controller.create(p.getName(), request);
-        m.sendMessage(p, messages.getString("ticket.success"), "ticket");
+        Bukkit.getScheduler().runTaskAsynchronously(TicketSystem.getMain(), () -> {
+            int ticketId = controller.create(playerName, request);
 
-        Bukkit.getOnlinePlayers().forEach(player -> {
-            if (player.hasPermission("ticketsystem.ticket.staff")) {
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
-                m.sendMessage(player,
-                        Objects.requireNonNull(messages.getString("ticket.new_ticket"))
-                                .replace("<button-list>",
-                                        String.format("[%s](/tickets hover=%s)",
-                                                messages.getString("ticket.buttons.list.label"),
-                                                messages.getString("ticket.buttons.list.hover"))
-                                ),
-                        "ticket"
-                );
-            }
+            Bukkit.getScheduler().runTask(TicketSystem.getMain(), () -> {
+                Player currentPlayer = Bukkit.getPlayerExact(playerName);
+                if (ticketId <= 0) {
+                    if (currentPlayer != null && currentPlayer.isOnline()) {
+                        m.sendMessage(currentPlayer, messages.getString("error"), "ticket");
+                    }
+                    return;
+                }
+
+                if (currentPlayer != null && currentPlayer.isOnline()) {
+                    m.sendMessage(currentPlayer, messages.getString("ticket.success"), "ticket");
+                }
+
+                Bukkit.getOnlinePlayers().forEach(player -> {
+                    if (player.hasPermission("ticketsystem.ticket.staff")) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
+                        m.sendMessage(player,
+                                Objects.requireNonNull(messages.getString("ticket.new_ticket"))
+                                        .replace("<button-list>",
+                                                String.format("[%s](/tickets hover=%s)",
+                                                        messages.getString("ticket.buttons.list.label"),
+                                                        messages.getString("ticket.buttons.list.hover"))
+                                        ),
+                                "ticket"
+                        );
+                    }
+                });
+
+                if (TicketSystem.getTelegramBotService() != null && TicketSystem.getTelegramBotService().isRunning()) {
+                    TicketSystem.getTelegramBotService().getTicketSyncService().syncPendingTicketsAsync();
+                }
+            });
         });
     }
 
@@ -223,41 +243,34 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        TicketModel ticket = controller.fetchById(id);
-
         if (args.length < 2 || String.join(" ", Arrays.copyOfRange(args, 2, args.length)).isEmpty()) {
             m.sendMessage(p, messages.getString("ticket.response.use_correct"), "ticket");
             return;
         }
 
         String response = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+        String responderName = p.getName();
 
-        if (ticket == null || ticket.getResponse() != null) {
-            m.sendMessage(p, messages.getString("ticket.not_found"));
-            return;
-        }
+        TicketSystem.getTicketAnswerService()
+                .answerTicketAsync(id, response, ResponderInfo.game(responderName, p.getUniqueId()))
+                .thenAccept(result -> Bukkit.getScheduler().runTask(TicketSystem.getMain(), () -> {
+                    Player currentPlayer = Bukkit.getPlayerExact(responderName);
+                    if (currentPlayer == null || !currentPlayer.isOnline()) return;
 
-        ticket.setResponse(response);
-        ticket.setRespondedBy(p.getName());
-        ticket.setRespondedAt(new Timestamp(System.currentTimeMillis()));
+                    if (result.isSuccess()) {
+                        m.sendMessage(currentPlayer, messages.getString("ticket.response.success"), "ticket");
+                        return;
+                    }
 
-        controller.update(ticket);
+                    if (result.getStatus() == AnswerTicketResult.Status.ALREADY_CLOSED ||
+                            result.getStatus() == AnswerTicketResult.Status.ALREADY_REVIEWED ||
+                            result.getStatus() == AnswerTicketResult.Status.NOT_FOUND) {
+                        m.sendMessage(currentPlayer, messages.getString("ticket.not_found"), "ticket");
+                        return;
+                    }
 
-        m.sendMessage(p, messages.getString("ticket.response.success"), "ticket");
-
-        Player t = Bukkit.getPlayerExact(ticket.getPlayer());
-        if (!Bukkit.getOnlinePlayers().contains(t)) return;
-
-        ticket.setSend(true);
-
-        controller.update(ticket);
-
-        String str = messages.getString("ticket.response.message.header") +
-                new ResponseMessages().getTicketResponse(ticket) +
-                messages.getString("ticket.response.message.footer");
-
-        t.playSound(t.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
-        m.sendMessage(t, str);
+                    m.sendMessage(currentPlayer, messages.getString("error"), "ticket");
+                }));
     }
 
     private void help(Player p) {

@@ -1,6 +1,7 @@
 package com.github.henriquemb.ticketsystem.database.factory;
 
 import com.github.henriquemb.ticketsystem.TicketSystem;
+import com.github.henriquemb.ticketsystem.telegram.database.DatabaseMigrationService;
 
 import java.sql.*;
 
@@ -46,6 +47,8 @@ public class CreateDatabase {
             stm.executeUpdate(ticket);
             stm.executeUpdate(report);
             stm.executeUpdate(suggestion);
+
+            new DatabaseMigrationService().migrate(conn);
         }
         catch (Exception e) {
             System.out.println("Erro ao criar tabelas");

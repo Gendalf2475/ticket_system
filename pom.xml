@@ -12,7 +12,8 @@
     <name>TicketSystem</name>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
+        <telegrambots.version>9.5.0</telegrambots.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -22,16 +23,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -44,6 +44,42 @@
                                 <relocation>
                                     <pattern>de.themoep.minedown</pattern>
                                     <shadedPattern>${project.groupId}.${project.artifactId}.minedown</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.telegram</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.org.telegram</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>okhttp3</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.okhttp3</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>okio</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.okio</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>kotlin</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.kotlin</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.jetbrains</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.org.jetbrains</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.fasterxml.jackson</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.com.fasterxml.jackson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.io</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.org.apache.commons.io</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.lang3</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.org.apache.commons.lang3</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>${project.groupId}.${project.artifactId}.telegrambots.com.google.common</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -88,9 +124,21 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-longpolling</artifactId>
+            <version>${telegrambots.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-client</artifactId>
+            <version>${telegrambots.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
