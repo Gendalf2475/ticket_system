@@ -1,0 +1,42 @@
+name: TicketSystem
+version: '${project.version}'
+main: com.github.henriquemb.ticketsystem.TicketSystem
+api-version: 1.16
+authors: [ henriquemb ]
+commands:
+  ticket:
+    usage: /ticket
+    aliases:
+      - ajuda
+      - duvida
+  tickets:
+    usage: /tickets
+  report:
+    usage: /report
+    aliases:
+      - reportar
+      - denunciar
+  reports:
+    usage: /reports
+    aliases:
+      - denuncias
+  suggestions:
+    usage: /suggestions
+    aliases:
+      - sugestoes
+      - sugestões
+  suggestion:
+    usage: /suggestion
+    aliases:
+      - sugestão
+      - sugestao
+  support:
+    usage: /support
+    aliases:
+      - ajudar
+      - helping
+      - helpfull
+  ticketsystem:
+    usage: ticketsystem
+    aliases:
+      - ts
