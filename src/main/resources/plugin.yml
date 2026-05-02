@@ -1,7 +1,7 @@
 name: TicketSystem
 version: '${project.version}'
 main: com.github.henriquemb.ticketsystem.TicketSystem
-api-version: 1.16
+api-version: '1.21.8'
 authors: [ henriquemb ]
 commands:
   ticket:
