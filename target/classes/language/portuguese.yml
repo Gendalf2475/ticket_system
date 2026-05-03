@@ -1,0 +1,265 @@
+reload: "&aRecarregado com sucesso."
+prefix:
+  ticket: "&8[&7Tickets&8] &7» "
+  report: "&8[&7Reports&8] &7» "
+  suggestion: "&8[&7Suggestions&8] &7» "
+status:
+  ticket:
+    canceled:
+      name: "Cancelado"
+      color: "&8"
+    unavailable:
+      name: "Não avaliado"
+      color: "&7"
+    terrible:
+      name: "Péssimo"
+      color: "&4"
+    bad:
+      name: "Ruim"
+      color: "&c"
+    regular:
+      name: "Regular"
+      color: "&e"
+    good:
+      name: "Bom"
+      color: "&a"
+    great:
+      name: "Ótimo"
+      color: "&2"
+  report:
+    waiting:
+      name: "Aguardando"
+      color: "&e"
+    accepted:
+      name: "Aceito"
+      color: "&a"
+    reject:
+      name: "Recusado"
+      color: "&c"
+    review:
+      name: "Em analise"
+      color: "&6"
+permission:
+  no_permission: "&cSem permissão"
+warnings:
+  only_players: "Somente jogadores podem executar esse comando"
+  invalid_id: "&cInforme um id válido."
+error: "&cOcorreu algo inesperado, contate a staff."
+player:
+  not_found: "&cPlayer offline ou não encontrado"
+  offline: "&cJogador offline"
+pagination:
+  header: "\n&f&l» &bPágina: &f<self> &bde &f<total> &f&l«"
+  footer: "<button-back> <button-next>"
+  error:
+    invalid: "&cInforme uma página válida"
+    not_found: "&cPágina não encontrada"
+  buttons:
+    back:
+      label: "&f[&bVoltar&f]"
+      hover: "&fVoltar"
+    next:
+      label: "&f[&bPróxima&f]"
+      hover: "&fPróxima"
+ticket:
+  use_correct: "&cUso correto: /ticket <dúvida>"
+  not_found: "&cTicket não encontrado ou já foi respondido"
+  empty: "&aNenhum ticket encontrado"
+  shot: "&cPor favor, explique melhor sua dúvida"
+  success: "&aTicket enviado com sucesso"
+  pending: "&bAtualmente temos &f<total> &btickets pendentes"
+  rating_canceled: "&aAvaliação cancelada com sucesso"
+  is_canceled: "&cA nota já está cancelada."
+  new_ticket: "&bNovo ticket recebido <button-list>"
+  cancel_all:
+    empty: "&aNenhum ticket encontrado"
+    success: "&cTodos os tickets de <player> tiveram a nota cancelada."
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eDúvida: &f<ticket>"
+    - "<button-response> <button-teleport>"
+    - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eDúvida: &f<ticket>"
+    - "&eResposta: &f<response>"
+    - "&eRespondido por: &f<respondedBy>"
+    - "&eNota: &f<rating> <button-invalid_rating>"
+    - "&b&m--------------------------------------------------"
+  response:
+    use_correct: "&cUso correto: /ticket response <id> <resposta>"
+    success: "&aTicket respondido com sucesso"
+    message:
+      header: "\n&b&m--------------------------------------------------\n"
+      footer: "&b&m--------------------------------------------------\n"
+      content:
+        - "&eDúvida: &f<ticket>"
+        - "&eResposta: &f<response>"
+        - "&eRespondido por: &f<respondedBy>"
+        - "&eAvalie a resposta: <ratings>"
+  rating:
+    use_correct: "&cUso correto: /ticket rate <id> <nota>"
+    invalid: "&cNota inválida."
+    success: "&aTicket avaliado com sucesso, obrigado :D"
+    not_author: "&cVocê não pode avaliar esse ticket"
+    rated: "&cVocê já avaliou o ticket"
+    announcement: "&a<player> recebeu uma avaliação <rating>"
+  teleport:
+    success: "&aTeleportado com sucesso"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/ticket &7- &fEnvia uma dúvida"
+    - "&e/ticket list &7- &fLista os tickets pendentes"
+    - "&e/ticket response &7- &fResponde um ticket"
+    - "&e/ticket view &7- &fMostra detalhes de um ticket"
+    - "&e/ticket teleport &7- &fTeleporta ao solicitante do ticket"
+    - "&e/ticket rate &7- &fAvalia um ticket"
+    - "&b&m--------------------------------------------------"
+  list: "&eJogador: &f<player> &7| &eDúvida: &f<ticket-shot> <button-view> <button-teleport>"
+  stats:
+    list: "&eStaffer: &f<player> &7| &eMédia: &f<average> <button-stats>"
+    detail:
+      - "&fStats de: &e<player>"
+      - " &eMédia: &f<average>"
+      - " &eTotal: &f<total>"
+      - " &eTotal avaliado: &f<total-rate>"
+      - " &eTotal sem avaliação: &f<total-pending>"
+      - "&fDetalhes:"
+      - " <ratings>"
+  buttons:
+    list:
+      label: "[Clique para listar]"
+      hover: "&aListar"
+    view:
+      label: "&a[Ver]"
+      hover: "&aVer"
+    teleport:
+      label: "&a[Teleportar]"
+      hover: "&aTeleportar"
+    response:
+      label: "&a[Responder]"
+      hover: "&aResponder"
+    stats:
+      label: "&a[Detalhes]"
+      hover: "&aDetalhes de &f<player>"
+    invalid_rating:
+      label: "&c[Nota inválida]"
+      hover: "&cCancelar nota"
+report:
+  use_correct: "&cUso correto: /report <jogador> [prova] [motivo]"
+  not_found: "&cReport não encontrado ou já foi verificado"
+  empty: "&aNenhum report encontrado :D"
+  not_yourself: "&cVocê não pode reportar a si mesmo"
+  success: "&aJogador reportado com sucesso, obrigado"
+  pending: "&bAtualmente temos &f<total> &breports pendentes"
+  new_report: "&bNovo report recebido <button-list>"
+  no_reason: "&fNão informado"
+  status:
+    invalid: "&cStatus inválido."
+    change: "&aO status do report foi alterado para: <status>"
+    change_to: "&fAlterar status para: "
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eReportado: &f<reported>"
+    - "&eMotivo: &f<reason>"
+    - "&eProva: &f<evidence>"
+    - "&eStatus: <status>"
+    - "<button-teleport>"
+    - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eReportado: &f<reported>"
+    - "&eMotivo: &f<reason>"
+    - "&eProva: &f<evidence>"
+    - "&eStatus: <status>"
+    - "&b&m--------------------------------------------------"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/report &7- &fReporta um jogador"
+    - "&e/report list &7- &fLista os reports pendentes"
+    - "&e/report tp &7- &fTeleporta a um jogador reportado"
+    - "&e/report view &7- &fMostra detalhes de um report"
+    - "&e/report verify &7- &fMarca um report como verificado"
+    - "&b&m--------------------------------------------------"
+  list: "&eReportado: &f<reported> &7| &eMotivo: &f<reason-shot> <button-view> <button-teleport>"
+  buttons:
+    list:
+      label: "[Clique para listar]"
+      hover: "&aListar"
+    view:
+      label: "&a[Ver]"
+      hover: "&a[Teleportar]"
+    teleport:
+      label: "&a[Teleportar]"
+      hover: "&aTeleportar"
+suggestion:
+  use_correct: "&cUso correto: /suggestion <sugestão>"
+  not_found: "&cSugestão não encontrado ou já foi respondida"
+  empty: "&aNenhuma sugestão encontrada :C"
+  shot: "Por favor, explique melhor a sua sugestão"
+  success: "&aSugestão enviada com sucesso"
+  pending: "&bAtualmente temos &f<total> &bsugestões aguardando resposta."
+  new_suggestion: "&bNova sugestão recebida <button-list>"
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eSugestão: &f<suggestion>"
+    - "<button-response>"
+    - "&b&m--------------------------------------------------\n"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eSugestão: &f<suggestion>"
+    - "&eResposta: &f<response>"
+    - "&eRespondido por: &f<respondedBy>"
+    - "&b&m--------------------------------------------------\n"
+  response:
+    use_correct: "&cUso correto: /suggestion response <id> <resposta>"
+    success: "&aSugestão respondida com sucesso"
+    message:
+      header: "\n&b&m--------------------------------------------------\n"
+      footer: "&b&m--------------------------------------------------\n"
+      content:
+        - "&eJogador: &f<player>"
+        - "&eSugestão: &f<suggestion>"
+        - "&eResposta: &f<response>"
+        - "&eRespondido por: &f<respondedBy>"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/suggestion &7- &fEnvia uma sugestão"
+    - "&e/suggestion list &7- &fLista as sugestões pendentes"
+    - "&e/suggestion response &7- &fResponde a uma sugestão"
+    - "&e/suggestion view &7- &fMostra detalhes de uma sugestão"
+    - "&b&m--------------------------------------------------"
+  list: "\n&eJogador: &f<player> &7| &eSugestão: &f<suggestion-shot> <button-view>"
+  buttons:
+    list:
+      label: "[Clique para listar]"
+      hover: "&aListar"
+    view:
+      label: "&a[Ver]"
+      hover: "&aVer"
+    response:
+      label: "&a[Responder]"
+      hover: "&aResponder"
+support-announcement:
+  cooldown:
+    message: "&cAguarde o cooldown para disponibilizar ajuda novamente."
+  message:
+    - "\n\n&c&m=================================================="
+    - "&fO staffer <player> está disponível para ajudar."
+    - "<button-help>"
+    - "&c&m==================================================\n"
+  button-help:
+    label: "&e[Pedir ajuda]"
+    hover: "&ePedir ajuda para &f<player>"

@@ -147,6 +147,20 @@ public class TelegramRepository {
                 return new AnswerTicketResult(AnswerTicketResult.Status.NOT_LOCKED_BY_USER, ticket);
             }
 
+            TelegramUserProfile linkedGameUser = responder.getSource() == ResponderSource.GAME
+                    ? findTelegramUserByDisplayName(conn, responder.getDisplayName()).orElse(null)
+                    : null;
+            Long answeredByTelegramId = responder.getTelegramId();
+            String answeredByTelegramUsername = responder.getTelegramUsername();
+            String answeredByTelegramFirstName = responder.getTelegramFirstName();
+            String answeredByTelegramLastName = responder.getTelegramLastName();
+            if (linkedGameUser != null) {
+                answeredByTelegramId = linkedGameUser.getTelegramId();
+                answeredByTelegramUsername = linkedGameUser.getUsername();
+                answeredByTelegramFirstName = linkedGameUser.getFirstName();
+                answeredByTelegramLastName = linkedGameUser.getLastName();
+            }
+
             String sql = "UPDATE ticket SET response = ?, respondedBy = ?, respondedAt = ?, send = ?, " +
                     "status = 'closed', closed_at = ?, answered_by_type = ?, answered_by_name = ?, " +
                     "answered_by_minecraft_uuid = ?, answered_by_telegram_id = ?, answered_by_telegram_username = ?, " +
@@ -167,10 +181,10 @@ public class TelegramRepository {
                 pstm.setString(6, responder.getSource().getDatabaseValue());
                 pstm.setString(7, responder.getDisplayName());
                 pstm.setString(8, responder.getMinecraftUuid() == null ? null : responder.getMinecraftUuid().toString());
-                setLongOrNull(pstm, 9, responder.getTelegramId());
-                pstm.setString(10, responder.getTelegramUsername());
-                pstm.setString(11, responder.getTelegramFirstName());
-                pstm.setString(12, responder.getTelegramLastName());
+                setLongOrNull(pstm, 9, answeredByTelegramId);
+                pstm.setString(10, answeredByTelegramUsername);
+                pstm.setString(11, answeredByTelegramFirstName);
+                pstm.setString(12, answeredByTelegramLastName);
                 pstm.setInt(13, ticketId);
 
                 if (responder.getSource() == ResponderSource.TELEGRAM) {
@@ -462,6 +476,25 @@ public class TelegramRepository {
             try (ResultSet rs = pstm.executeQuery()) {
                 if (!rs.next()) return Optional.empty();
                 return Optional.of(mapTicket(rs));
+            }
+        }
+    }
+
+    private Optional<TelegramUserProfile> findTelegramUserByDisplayName(Connection conn, String displayName) throws SQLException {
+        if (displayName == null || displayName.trim().isEmpty()) return Optional.empty();
+
+        String sql = "SELECT * FROM telegram_users " +
+                "WHERE LOWER(nickname) = LOWER(?) OR LOWER(username) = LOWER(?) " +
+                "ORDER BY CASE WHEN LOWER(nickname) = LOWER(?) THEN 0 ELSE 1 END LIMIT 1";
+
+        try (PreparedStatement pstm = conn.prepareStatement(sql)) {
+            pstm.setString(1, displayName.trim());
+            pstm.setString(2, displayName.trim());
+            pstm.setString(3, displayName.trim());
+
+            try (ResultSet rs = pstm.executeQuery()) {
+                if (!rs.next()) return Optional.empty();
+                return Optional.of(mapTelegramUser(rs));
             }
         }
     }

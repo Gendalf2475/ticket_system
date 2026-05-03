@@ -10,7 +10,12 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class StatisticsService {
@@ -47,18 +52,13 @@ public class StatisticsService {
     }
 
     private List<AnswerStatsRow> loadAnswerRows(Timestamp since) {
-        List<AnswerStatsRow> rows = new ArrayList<>();
+        TelegramUsersIndex users = loadTelegramUsersIndex();
+        Map<String, AnswerStatsRow> rows = new LinkedHashMap<>();
         String sql = "SELECT t.answered_by_telegram_id, COALESCE(t.answered_by_telegram_username, '') AS username, " +
-                "COALESCE(t.answered_by_name, t.respondedBy, 'Неизвестно') AS display_name, " +
-                "COUNT(*) AS answers, " +
-                "SUM(CASE WHEN tr.rating = 'excellent' THEN 1 ELSE 0 END) AS excellent_count, " +
-                "SUM(CASE WHEN tr.rating = 'good' THEN 1 ELSE 0 END) AS good_count, " +
-                "SUM(CASE WHEN tr.rating = 'bad' THEN 1 ELSE 0 END) AS bad_count " +
+                "COALESCE(t.answered_by_name, t.respondedBy, 'Неизвестно') AS display_name, tr.rating AS review_rating " +
                 "FROM ticket t LEFT JOIN ticket_reviews tr ON tr.ticket_id = t.id " +
                 "WHERE t.response IS NOT NULL " +
-                (since == null ? "" : "AND t.respondedAt >= ? ") +
-                "GROUP BY t.answered_by_telegram_id, username, display_name " +
-                "ORDER BY answers DESC, display_name ASC";
+                (since == null ? "" : "AND t.respondedAt >= ? ");
 
         try (Connection conn = ConnectionFactory.createConnection();
              PreparedStatement pstm = conn.prepareStatement(sql)) {
@@ -66,16 +66,19 @@ public class StatisticsService {
 
             try (ResultSet rs = pstm.executeQuery()) {
                 while (rs.next()) {
-                    AnswerStatsRow row = new AnswerStatsRow();
-                    long telegramId = rs.getLong("answered_by_telegram_id");
-                    row.telegramId = rs.wasNull() ? null : telegramId;
-                    row.username = rs.getString("username");
-                    row.displayName = rs.getString("display_name");
-                    row.answers = rs.getInt("answers");
-                    row.excellent = rs.getInt("excellent_count");
-                    row.good = rs.getInt("good_count");
-                    row.bad = rs.getInt("bad_count");
-                    rows.add(row);
+                    Long telegramId = getLongObject(rs, "answered_by_telegram_id");
+                    String username = rs.getString("username");
+                    String displayName = rs.getString("display_name");
+                    StatsUser user = users.find(telegramId, username, displayName);
+
+                    AnswerStatsRow row = rows.computeIfAbsent(statsKey(user, telegramId, displayName), key ->
+                            new AnswerStatsRow(user, telegramId, username, displayName));
+                    row.answers++;
+
+                    String rating = rs.getString("review_rating");
+                    if ("excellent".equalsIgnoreCase(rating)) row.excellent++;
+                    else if ("good".equalsIgnoreCase(rating)) row.good++;
+                    else if ("bad".equalsIgnoreCase(rating)) row.bad++;
                 }
             }
         }
@@ -83,17 +86,20 @@ public class StatisticsService {
             TicketSystem.getMain().getLogger().log(Level.WARNING, "Erro ao carregar estatísticas de respostas Telegram", e);
         }
 
-        return rows;
+        List<AnswerStatsRow> sortedRows = new ArrayList<>(rows.values());
+        sortedRows.sort(Comparator
+                .comparingInt((AnswerStatsRow row) -> row.answers).reversed()
+                .thenComparing(row -> normalize(row.displayName)));
+        return sortedRows;
     }
 
     private List<ReviewStatsRow> loadReviewRows(Timestamp since) {
-        List<ReviewStatsRow> rows = new ArrayList<>();
+        TelegramUsersIndex users = loadTelegramUsersIndex();
+        Map<String, ReviewStatsRow> rows = new LinkedHashMap<>();
         String sql = "SELECT tr.reviewed_by_telegram_id, COALESCE(tr.reviewed_by_telegram_username, '') AS username, " +
-                "COALESCE(tr.reviewed_by_name, 'Пользователь') AS display_name, COUNT(*) AS reviews " +
+                "COALESCE(tr.reviewed_by_name, 'Пользователь') AS display_name " +
                 "FROM ticket_reviews tr " +
-                (since == null ? "" : "WHERE tr.created_at >= ? ") +
-                "GROUP BY tr.reviewed_by_telegram_id, username, display_name " +
-                "ORDER BY reviews DESC, display_name ASC";
+                (since == null ? "" : "WHERE tr.created_at >= ? ");
 
         try (Connection conn = ConnectionFactory.createConnection();
              PreparedStatement pstm = conn.prepareStatement(sql)) {
@@ -101,12 +107,14 @@ public class StatisticsService {
 
             try (ResultSet rs = pstm.executeQuery()) {
                 while (rs.next()) {
-                    ReviewStatsRow row = new ReviewStatsRow();
-                    row.telegramId = rs.getLong("reviewed_by_telegram_id");
-                    row.username = rs.getString("username");
-                    row.displayName = rs.getString("display_name");
-                    row.reviews = rs.getInt("reviews");
-                    rows.add(row);
+                    Long telegramId = getLongObject(rs, "reviewed_by_telegram_id");
+                    String username = rs.getString("username");
+                    String displayName = rs.getString("display_name");
+                    StatsUser user = users.find(telegramId, username, displayName);
+
+                    ReviewStatsRow row = rows.computeIfAbsent(statsKey(user, telegramId, displayName), key ->
+                            new ReviewStatsRow(user, telegramId, username, displayName));
+                    row.reviews++;
                 }
             }
         }
@@ -114,7 +122,11 @@ public class StatisticsService {
             TicketSystem.getMain().getLogger().log(Level.WARNING, "Erro ao carregar estatísticas проверок Telegram", e);
         }
 
-        return rows;
+        List<ReviewStatsRow> sortedRows = new ArrayList<>(rows.values());
+        sortedRows.sort(Comparator
+                .comparingInt((ReviewStatsRow row) -> row.reviews).reversed()
+                .thenComparing(row -> normalize(row.displayName)));
+        return sortedRows;
     }
 
     private String formatAnswerRows(List<AnswerStatsRow> rows) {
@@ -172,7 +184,47 @@ public class StatisticsService {
         return Timestamp.valueOf(start);
     }
 
-    private static class AnswerStatsRow {
+    private TelegramUsersIndex loadTelegramUsersIndex() {
+        TelegramUsersIndex index = new TelegramUsersIndex();
+
+        try (Connection conn = ConnectionFactory.createConnection();
+             PreparedStatement pstm = conn.prepareStatement("SELECT telegram_id, username, first_name, last_name, nickname FROM telegram_users");
+             ResultSet rs = pstm.executeQuery()) {
+            while (rs.next()) {
+                StatsUser user = new StatsUser();
+                user.telegramId = rs.getLong("telegram_id");
+                user.username = rs.getString("username");
+                user.firstName = rs.getString("first_name");
+                user.lastName = rs.getString("last_name");
+                user.nickname = rs.getString("nickname");
+                index.add(user);
+            }
+        }
+        catch (Exception e) {
+            TicketSystem.getMain().getLogger().log(Level.WARNING, "Erro ao carregar usuários Telegram para estatísticas", e);
+        }
+
+        return index;
+    }
+
+    private String statsKey(StatsUser user, Long telegramId, String fallbackName) {
+        // Telegram user_id is the stable statistics key; /setnick and usernames are display-only and may change.
+        if (user != null) return "tg:" + user.telegramId;
+        if (telegramId != null && telegramId > 0) return "tg:" + telegramId;
+        return "name:" + normalize(fallbackName);
+    }
+
+    private Long getLongObject(ResultSet rs, String column) throws Exception {
+        long value = rs.getLong(column);
+        return rs.wasNull() ? null : value;
+    }
+
+    private String normalize(String value) {
+        if (value == null) return "";
+        return value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private class AnswerStatsRow {
         private Long telegramId;
         private String username;
         private String displayName;
@@ -180,12 +232,67 @@ public class StatisticsService {
         private int excellent;
         private int good;
         private int bad;
+
+        private AnswerStatsRow(StatsUser user, Long telegramId, String username, String displayName) {
+            this.telegramId = user == null ? telegramId : user.telegramId;
+            this.username = user == null ? username : user.username;
+            this.displayName = user == null ? displayName : user.displayName();
+        }
     }
 
-    private static class ReviewStatsRow {
-        private long telegramId;
+    private class ReviewStatsRow {
+        private Long telegramId;
         private String username;
         private String displayName;
         private int reviews;
+
+        private ReviewStatsRow(StatsUser user, Long telegramId, String username, String displayName) {
+            this.telegramId = user == null ? telegramId : user.telegramId;
+            this.username = user == null ? username : user.username;
+            this.displayName = user == null ? displayName : user.displayName();
+        }
+    }
+
+    private class TelegramUsersIndex {
+        private final Map<Long, StatsUser> byId = new HashMap<>();
+        private final Map<String, StatsUser> byName = new HashMap<>();
+
+        private void add(StatsUser user) {
+            byId.put(user.telegramId, user);
+            putName(user.nickname, user);
+            putName(user.username, user);
+            putName(user.displayName(), user);
+        }
+
+        private StatsUser find(Long telegramId, String username, String displayName) {
+            if (telegramId != null && byId.containsKey(telegramId)) return byId.get(telegramId);
+
+            StatsUser user = byName.get(normalize(username));
+            if (user != null) return user;
+
+            return byName.get(normalize(displayName));
+        }
+
+        private void putName(String name, StatsUser user) {
+            String normalized = normalize(name);
+            if (!normalized.isEmpty()) byName.putIfAbsent(normalized, user);
+        }
+    }
+
+    private class StatsUser {
+        private long telegramId;
+        private String username;
+        private String firstName;
+        private String lastName;
+        private String nickname;
+
+        private String displayName() {
+            String fullName = formatService.firstNotBlank(
+                    nickname,
+                    username,
+                    ((firstName == null ? "" : firstName) + " " + (lastName == null ? "" : lastName)).trim()
+            );
+            return fullName.isEmpty() ? "Пользователь" : fullName;
+        }
     }
 }

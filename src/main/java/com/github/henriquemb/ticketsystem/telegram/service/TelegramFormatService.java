@@ -45,11 +45,15 @@ public class TelegramFormatService {
                         ticket.getReviewedByName())).append("\n")
                 .append("Оценка: ").append(ticket.getReviewRating() == null ? "не задана" : ticket.getReviewRating().getDisplayName());
 
-        if (ticket.getReviewRating() == ReviewRating.BAD && ticket.getReviewComment() != null && !ticket.getReviewComment().trim().isEmpty()) {
+        if (ticket.getReviewComment() != null && !ticket.getReviewComment().trim().isEmpty()) {
             message.append("\nКомментарий: ").append(escape(ticket.getReviewComment()));
         }
 
         return message.toString();
+    }
+
+    public String criticsTicketMessage(TicketRow ticket) {
+        return "⚠️ КРИТЫ\n\n" + reviewedTicketMessage(ticket);
     }
 
     public String profileMessage(TelegramUserProfile profile) {

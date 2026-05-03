@@ -34,6 +34,14 @@ public enum ReviewRating {
         }
     }
 
+    public boolean requiresComment() {
+        return this == GOOD || this == BAD;
+    }
+
+    public boolean shouldSendToCriticsTopic() {
+        return this == GOOD || this == BAD;
+    }
+
     public static ReviewRating fromCallback(String callbackPrefix) {
         if ("review_excellent".equals(callbackPrefix)) return EXCELLENT;
         if ("review_good".equals(callbackPrefix)) return GOOD;

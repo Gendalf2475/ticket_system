@@ -86,6 +86,8 @@ public class TicketSyncService {
                             null
                     );
                 }
+
+                sendToCriticsTopicIfNeeded(ticket.get());
             }
             catch (Exception e) {
                 plugin.getLogger().log(Level.WARNING, "Erro ao atualizar revisão do ticket no Telegram", e);
@@ -178,6 +180,17 @@ public class TicketSyncService {
                 actualRecord.getNewTicketChatId(),
                 actualRecord.getNewTicketMessageId(),
                 formatService.newTicketClosedMessage(ticket),
+                null
+        );
+    }
+
+    private void sendToCriticsTopicIfNeeded(TicketRow ticket) {
+        if (ticket.getReviewRating() == null || !ticket.getReviewRating().shouldSendToCriticsTopic()) return;
+        if (!settings.isCriticsTopicEnabled() || !settings.getCriticsTopic().hasChat()) return;
+
+        apiService.sendTopicMessage(
+                settings.getCriticsTopic(),
+                formatService.criticsTicketMessage(ticket),
                 null
         );
     }

@@ -8,8 +8,6 @@ import com.github.henriquemb.ticketsystem.telegram.database.TelegramRepository;
 import com.github.henriquemb.ticketsystem.telegram.model.TelegramSettings;
 import com.github.henriquemb.ticketsystem.telegram.service.TicketAnswerService;
 import com.github.henriquemb.ticketsystem.util.CustomConfig;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,15 +15,10 @@ import java.io.File;
 import java.util.Locale;
 
 public final class TicketSystem extends JavaPlugin {
-    @Getter @Setter
     private static TicketSystem main;
-    @Getter @Setter
     private static Model model;
-    @Getter @Setter
     private static FileConfiguration messages;
-    @Getter @Setter
     private static TicketAnswerService ticketAnswerService;
-    @Getter @Setter
     private static TelegramBotService telegramBotService;
 
     @Override
@@ -62,5 +55,45 @@ public final class TicketSystem extends JavaPlugin {
     @Override
     public void onDisable() {
         if (getTelegramBotService() != null) getTelegramBotService().stop();
+    }
+
+    public static TicketSystem getMain() {
+        return main;
+    }
+
+    public static void setMain(TicketSystem main) {
+        TicketSystem.main = main;
+    }
+
+    public static Model getModel() {
+        return model;
+    }
+
+    public static void setModel(Model model) {
+        TicketSystem.model = model;
+    }
+
+    public static FileConfiguration getMessages() {
+        return messages;
+    }
+
+    public static void setMessages(FileConfiguration messages) {
+        TicketSystem.messages = messages;
+    }
+
+    public static TicketAnswerService getTicketAnswerService() {
+        return ticketAnswerService;
+    }
+
+    public static void setTicketAnswerService(TicketAnswerService ticketAnswerService) {
+        TicketSystem.ticketAnswerService = ticketAnswerService;
+    }
+
+    public static TelegramBotService getTelegramBotService() {
+        return telegramBotService;
+    }
+
+    public static void setTelegramBotService(TelegramBotService telegramBotService) {
+        TicketSystem.telegramBotService = telegramBotService;
     }
 }

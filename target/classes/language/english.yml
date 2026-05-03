@@ -1,0 +1,265 @@
+reload: "&aSuccessfully reloaded."
+prefix:
+  ticket: "&8[&7Tickets&8] &7» "
+  report: "&8[&7Reports&8] &7» "
+  suggestion: "&8[&7Suggestions&8] &7» "
+status:
+  ticket:
+    canceled:
+      name: "Canceled"
+      color: "&8"
+    unavailable:
+      name: "Not rated"
+      color: "&7"
+    terrible:
+      name: "Terrible"
+      color: "&4"
+    bad:
+      name: "Bad"
+      color: "&c"
+    regular:
+      name: "Regular"
+      color: "&e"
+    good:
+      name: "Good"
+      color: "&a"
+    great:
+      name: "Great"
+      color: "&2"
+  report:
+    waiting:
+      name: "Waiting"
+      color: "&e"
+    accepted:
+      name: "Accepted"
+      color: "&a"
+    reject:
+      name: "Rejected"
+      color: "&c"
+    review:
+      name: "Sob analysis"
+      color: "&6"
+permission:
+  no_permission: "&cNo permission"
+warnings:
+  only_players: "Only players can run this command"
+  invalid_id: "&cInform a valid ID."
+error: "&cSomething unexpected has occurred, contact staff."
+player:
+  not_found: "&cPlayer offline or not found"
+  offline: "&cPlayer offline"
+pagination:
+  header: "\n&f&l» &bPage: &f<self> &bof &f<total> &f&l«"
+  footer: "<button-back> <button-next>"
+  error:
+    invalid: "&cInform a valid page"
+    not_found: "&cPage not found"
+  buttons:
+    back:
+      label: "&f[&bReturn&f]"
+      hover: "&fReturn"
+    next:
+      label: "&f[&bNext&f]"
+      hover: "&fNext"
+ticket:
+  use_correct: "&cCorrect use: /ticket <doubt>"
+  not_found: "&cTicket not found or already answered"
+  empty: "&aNo ticket found"
+  shot: "&cPlease, explain better your doubt"
+  success: "&aTicket sent successfully"
+  pending: "&bWe currently have &f<total> &bpending tickets"
+  rating_canceled: "&aAssessment successfully canceled"
+  is_canceled: "&cThe rating has already been canceled."
+  new_ticket: "&bNew ticket received <button-list>"
+  cancel_all:
+    empty: "&aNo tickets found"
+    success: "&cAll <player> tickets have been canceled."
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&ePlayer: &f<player>"
+    - "&eReason: &f<ticket>"
+    - "<button-response> <button-teleport>"
+    - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&ePlayer: &f<player>"
+    - "&eReason: &f<ticket>"
+    - "&eResponse: &f<response>"
+    - "&eAnswered by: &f<respondedBy>"
+    - "&eRating: &f<rating> <button-invalid_rating>"
+    - "&b&m--------------------------------------------------"
+  response:
+    use_correct: "&cCorrect use: /ticket response <id> <response>"
+    success: "&aTicket successfully answered"
+    message:
+      header: "\n&b&m--------------------------------------------------\n"
+      footer: "&b&m--------------------------------------------------\n"
+      content:
+        - "&eReason: &f<ticket>"
+        - "&eResponse: &f<response>"
+        - "&eAnswered by: &f<respondedBy>"
+        - "&eRate the answer: <ratings>"
+  rating:
+    use_correct: "&cCorrect use: /ticket rate <id> <rating>"
+    invalid: "&cInvalid rating."
+    success: "&aTicket successfully rated, thanks :D"
+    not_author: "&cYou cannot rate this ticket"
+    rated: "&cYou have already rated this ticket"
+    announcement: "&a<player> received the rate <rating>"
+  teleport:
+    success: "&aSuccessfully teleported"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/ticket &7- &fSend a doubt"
+    - "&e/ticket list &7- &fList pending tickets"
+    - "&e/ticket response &7- &fResponse a ticket"
+    - "&e/ticket view &7- &fShow details of a ticket"
+    - "&e/ticket teleport &7- &fTeleport to ticket requester"
+    - "&e/ticket rate &7- &fRate a ticket"
+    - "&b&m--------------------------------------------------"
+  list: "&ePlayer: &f<player> &7| &eReason: &f<ticket-shot> <button-view> <button-teleport>"
+  stats:
+    list: "&eStaffer: &f<player> &7| &eAverage: &f<average> <button-stats>"
+    detail:
+      - "&fStats of: &e<player>"
+      - " &eAverage: &f<average>"
+      - " &eTotal: &f<total>"
+      - " &eTotal rated: &f<total-rate>"
+      - " &eTotal not rated: &f<total-pending>"
+      - "&fDetails:"
+      - " <ratings>"
+  buttons:
+    list:
+      label: "[Click to list]"
+      hover: "&aList"
+    view:
+      label: "&a[View]"
+      hover: "&aView"
+    teleport:
+      label: "&a[Teleport]"
+      hover: "&aTeleport"
+    response:
+      label: "&a[Answer]"
+      hover: "&aAnswer"
+    stats:
+      label: "&a[Details]"
+      hover: "&aDetails from &f<player>"
+    invalid_rating:
+      label: "&c[Invalid rating]"
+      hover: "&cCancel rating"
+report:
+  use_correct: "&cCorrect use: /report <player> [proof] [reason]"
+  not_found: "&cReport not found or already verified"
+  empty: "&aNo reports found :C"
+  not_yourself: "&cYou cannot report yourselfo"
+  success: "&aSuccessfully reported player, thanks"
+  pending: "&bWe currently have &f<total> &bpending reports"
+  new_report: "&bNew report received <button-list>"
+  no_reason: "&fUninformed"
+  status:
+    invalid: "&cInvalid status."
+    change: "&aThe report status has been changed to: <status>"
+    change_to: "&fChange status to: "
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&ePlayer: &f<player>"
+    - "&eReported: &f<reported>"
+    - "&eReason: &f<reason>"
+    - "&eEvidence: &f<evidence>"
+    - "&eStatus: <status>"
+    - "<button-teleport>"
+    - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&ePlayer: &f<player>"
+    - "&eReported: &f<reported>"
+    - "&eReason: &f<reason>"
+    - "&eEvidence: &f<evidence>"
+    - "&eStatus: <status>"
+    - "&b&m--------------------------------------------------"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/report &7- &fReport a player"
+    - "&e/report list &7- &fList pending reports"
+    - "&e/report tp &7- &fTeleport to a reported player"
+    - "&e/report view &7- &fShow details of a resport"
+    - "&e/report verify &7- &fMark a report as verified"
+    - "&b&m--------------------------------------------------"
+  list: "&eReported: &f<reported> &7| &eReason: &f<reason-shot> <button-view> <button-teleport>"
+  buttons:
+    list:
+      label: "[Click to list]"
+      hover: "&aList"
+    view:
+      label: "&a[View]"
+      hover: "&aView"
+    teleport:
+      label: "&a[Teleport]"
+      hover: "&aTeleport"
+suggestion:
+  use_correct: "&cCorrect use: /suggestion <suggestion>"
+  not_found: "&cSugestão not found or already answered"
+  empty: "&aNo suggestion found :C"
+  shot: "&cPlease, explain better your suggestion"
+  success: "&aSuggestion sent successfully"
+  pending: "&bWe currently have &f<total> &bsuggestions waiting for response."
+  new_suggestion: "&bNew suggestion received <button-list>"
+  view:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&ePlayer: &f<player>"
+    - "&eSuggestion: &f<suggestion>"
+    - "<button-response>"
+    - "&b&m--------------------------------------------------\n"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&ePlayer: &f<player>"
+    - "&eSuggestion: &f<suggestion>"
+    - "&eResponse: &f<response>"
+    - "&eAnswered by: &f<respondedBy>"
+    - "&b&m--------------------------------------------------\n"
+  response:
+    use_correct: "&cCorrect use: /suggestion response <id> <response>"
+    success: "&aSuggestion successfully answered"
+    message:
+      header: "\n&b&m--------------------------------------------------\n"
+      footer: "&b&m--------------------------------------------------\n"
+      content:
+        - "&ePlayer: &f<player>"
+        - "&eSuggestion: &f<suggestion>"
+        - "&eResponse: &f<response>"
+        - "&eAnswered by: &f<respondedBy>"
+  help:
+    - "\n&b&m--------------------------------------------------"
+    - "&e/suggestion &7- &fSend a suggestion"
+    - "&e/suggestion list &7- &fList pending suggestions"
+    - "&e/suggestion response &7- &fAnswer the suggestions"
+    - "&e/suggestion view &7- &fShow details of a suggestion"
+    - "&b&m--------------------------------------------------"
+  list: "\n&ePlayer: &f<player> &7| &eSuggestion: &f<suggestion-shot> <button-view>"
+  buttons:
+    list:
+      label: "[Click to list]"
+      hover: "&aList"
+    view:
+      label: "&a[View]"
+      hover: "&aView"
+    response:
+      label: "&a[Answer]"
+      hover: "&aAnswer"
+support-announcement:
+  cooldown:
+    message: "&cWait for the cooldown to make help available again."
+  message:
+    - "\n\n&c&m=================================================="
+    - "&fO staffer <player> is available to help."
+    - "<button-help>"
+    - "&c&m==================================================\n"
+  button-help:
+    label: "&e[Ask help]"
+    hover: "&eAsk for help to &f<player>"

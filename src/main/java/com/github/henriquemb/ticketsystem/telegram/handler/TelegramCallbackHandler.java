@@ -145,8 +145,8 @@ public class TelegramCallbackHandler {
             return;
         }
 
-        if (rating == ReviewRating.BAD) {
-            sendBadReviewPrompt(callbackQuery, user, ticketId);
+        if (rating.requiresComment()) {
+            sendReviewCommentPrompt(callbackQuery, user, ticketId, rating);
             apiService.answerCallbackQuery(callbackQuery.getId(), "Введите комментарий к оценке.", false);
             return;
         }
@@ -163,7 +163,7 @@ public class TelegramCallbackHandler {
         }
     }
 
-    private void sendBadReviewPrompt(CallbackQuery callbackQuery, TelegramUserProfile user, int ticketId) {
+    private void sendReviewCommentPrompt(CallbackQuery callbackQuery, TelegramUserProfile user, int ticketId, ReviewRating rating) {
         Message callbackMessage = accessibleMessage(callbackQuery);
         long chatId = callbackMessage == null ? settings.getClosedTicketsTopic().getChatId() : callbackMessage.getChatId();
         Integer threadId = callbackMessage == null ? settings.getClosedTicketsTopic().getThreadId() : callbackMessage.getMessageThreadId();
@@ -171,19 +171,28 @@ public class TelegramCallbackHandler {
         Message prompt = apiService.sendMessage(
                 chatId,
                 threadId,
-                "📝 Укажите, что именно плохо в ответе на тикет #" + ticketId + ".",
+                reviewCommentPrompt(ticketId, rating),
                 null
         );
 
         Integer promptMessageId = prompt == null ? null : prompt.getMessageId();
         userStates.put(user.getTelegramId(), new UserState(
-                UserState.Type.WAITING_FOR_BAD_REVIEW_COMMENT,
+                UserState.Type.WAITING_FOR_REVIEW_COMMENT,
                 ticketId,
+                rating,
                 chatId,
                 threadId,
                 promptMessageId
         ));
         repository.savePromptMessage(ticketId, promptMessageId);
+    }
+
+    private String reviewCommentPrompt(int ticketId, ReviewRating rating) {
+        if (rating == ReviewRating.GOOD) {
+            return "✏️ Напишите комментарий к оценке «Хорошо» для тикета #" + ticketId + ".";
+        }
+
+        return "📝 Укажите, что именно плохо в ответе на тикет #" + ticketId + ".";
     }
 
     private Integer parseTicketId(String value) {

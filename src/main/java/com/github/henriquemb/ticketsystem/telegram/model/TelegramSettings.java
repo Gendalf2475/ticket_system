@@ -15,6 +15,8 @@ public class TelegramSettings {
     private final int pollingIntervalSeconds;
     private final TelegramTopic newTicketsTopic;
     private final TelegramTopic closedTicketsTopic;
+    private final TelegramTopic criticsTopic;
+    private final boolean criticsTopicEnabled;
     private final boolean deleteUserInput;
     private final boolean deleteBotPrompts;
     private final String parseMode;
@@ -28,6 +30,9 @@ public class TelegramSettings {
         this.pollingIntervalSeconds = Math.max(1, config.getInt("telegram.polling-interval-seconds", 5));
         this.newTicketsTopic = readTopic(config, "telegram.topics.new-tickets");
         this.closedTicketsTopic = readTopic(config, "telegram.topics.closed-tickets");
+        this.criticsTopic = readTopicWithFallback(config, "telegram.topics.critics", "critics_topic");
+        this.criticsTopicEnabled = config.getBoolean("telegram.topics.critics.enabled",
+                config.getBoolean("critics_topic.enabled", false));
         this.deleteUserInput = config.getBoolean("telegram.cleanup.delete-user-input", true);
         this.deleteBotPrompts = config.getBoolean("telegram.cleanup.delete-bot-prompts", true);
         this.parseMode = config.getString("telegram.messages.parse-mode", "HTML");
@@ -55,6 +60,13 @@ public class TelegramSettings {
     private TelegramTopic readTopic(FileConfiguration config, String path) {
         long chatId = config.getLong(path + ".chat-id", 0L);
         int configuredThreadId = config.getInt(path + ".thread-id", 0);
+        Integer threadId = configuredThreadId > 0 ? configuredThreadId : null;
+        return new TelegramTopic(chatId, threadId);
+    }
+
+    private TelegramTopic readTopicWithFallback(FileConfiguration config, String primaryPath, String fallbackPath) {
+        long chatId = config.getLong(primaryPath + ".chat-id", config.getLong(fallbackPath + ".chat_id", 0L));
+        int configuredThreadId = config.getInt(primaryPath + ".thread-id", config.getInt(fallbackPath + ".thread_id", 0));
         Integer threadId = configuredThreadId > 0 ? configuredThreadId : null;
         return new TelegramTopic(chatId, threadId);
     }
@@ -89,6 +101,14 @@ public class TelegramSettings {
 
     public TelegramTopic getClosedTicketsTopic() {
         return closedTicketsTopic;
+    }
+
+    public TelegramTopic getCriticsTopic() {
+        return criticsTopic;
+    }
+
+    public boolean isCriticsTopicEnabled() {
+        return criticsTopicEnabled;
     }
 
     public boolean isDeleteUserInput() {

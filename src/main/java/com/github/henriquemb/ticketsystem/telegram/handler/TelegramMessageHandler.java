@@ -57,8 +57,8 @@ public class TelegramMessageHandler {
             return;
         }
 
-        if (state.getType() == UserState.Type.WAITING_FOR_BAD_REVIEW_COMMENT) {
-            handleBadReviewComment(message, user, state, text);
+        if (state.getType() == UserState.Type.WAITING_FOR_REVIEW_COMMENT) {
+            handleReviewComment(message, user, state, text);
         }
     }
 
@@ -113,14 +113,22 @@ public class TelegramMessageHandler {
         apiService.sendMessage(message.getChatId(), message.getMessageThreadId(), "Не удалось сохранить ответ. Попробуйте позже.", null);
     }
 
-    private void handleBadReviewComment(Message message, TelegramUserProfile user, UserState state, String comment) {
+    private void handleReviewComment(Message message, TelegramUserProfile user, UserState state, String comment) {
         if (comment.trim().isEmpty()) {
             deleteUserInput(message);
             apiService.sendMessage(message.getChatId(), message.getMessageThreadId(), "⚠️ Комментарий не может быть пустым.", null);
             return;
         }
 
-        ReviewTicketResult result = reviewService.reviewTicket(state.getTicketId(), ReviewRating.BAD, user, comment.trim());
+        ReviewRating rating = state.getReviewRating();
+        if (rating == null) {
+            userStates.remove(user.getTelegramId());
+            cleanupPrompt(state);
+            apiService.sendMessage(message.getChatId(), message.getMessageThreadId(), "Не удалось определить оценку. Нажмите кнопку оценки ещё раз.", null);
+            return;
+        }
+
+        ReviewTicketResult result = reviewService.reviewTicket(state.getTicketId(), rating, user, comment.trim());
         if (result.isSuccess()) {
             userStates.remove(user.getTelegramId());
             deleteUserInput(message);

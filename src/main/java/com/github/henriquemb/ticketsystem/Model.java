@@ -1,7 +1,6 @@
 package com.github.henriquemb.ticketsystem;
 
 import de.themoep.minedown.MineDown;
-import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -11,7 +10,6 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
 public class Model {
     private final FileConfiguration messages = TicketSystem.getMessages();
 
@@ -44,5 +42,25 @@ public class Model {
     public void broadcastMessage(String message) {
         Bukkit.getOnlinePlayers().forEach(player ->
                 player.spigot().sendMessage(MineDown.parse(message)));
+    }
+
+    public FileConfiguration getMessages() {
+        return messages;
+    }
+
+    public String getTicketPrefix() {
+        return ticketPrefix;
+    }
+
+    public String getReportPrefix() {
+        return reportPrefix;
+    }
+
+    public String getSuggestionPrefix() {
+        return suggestionPrefix;
+    }
+
+    public Map<Player, Timestamp> getSupportCommandDelay() {
+        return supportCommandDelay;
     }
 }
